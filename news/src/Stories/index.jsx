@@ -1,7 +1,16 @@
 import React from "react";
 import Table from "../Table";
 
-class newStories extends React.Component {
+type props = {};
+
+type StateProps = {
+  error: null,
+  isLoaded: boolean,
+  items: Array<String>,
+  searchItem: string
+};
+
+class newStories extends React.Component<props, StateProps> {
   constructor(props) {
     super(props);
     this.state = {
@@ -13,6 +22,7 @@ class newStories extends React.Component {
     this.getStories = this.getStories.bind(this);
   }
 
+  // Onclick change the data onscreen by setting the state of the search item
   getStories(searchItem) {
     this.setState({ searchItem: searchItem });
     //console.log(this.state.searchItem);

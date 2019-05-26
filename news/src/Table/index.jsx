@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 const base = " https://hacker-news.firebaseio.com/v0/item/",
   extension = ".json?print=pretty";
+
 type Props = {
   searchTerm: string
 };
@@ -33,7 +34,7 @@ export default class Table extends React.Component<Props, StateType> {
   }
 
   componentDidMount() {
-    // Get all the top story ids
+    // Get all the ids for a particular category
     axios
       .get(
         "https://hacker-news.firebaseio.com/v0/" +
@@ -41,11 +42,11 @@ export default class Table extends React.Component<Props, StateType> {
           ".json?print=pretty"
       )
       .then(result => {
+        // Store category ids
         const topStories = result.data;
+        // Set the state of the category ids
         this.setState({ topStories });
-        // this.setState({ gotStories: true });
-        //console.log("Hi");
-        // console.log(topStories);
+        // Store the array of objects for the particular category
         let promises = [];
         for (let i = 0; i < topStories.length; i++) {
           axios.get(base + topStories[i] + extension).then(res => {
@@ -53,13 +54,14 @@ export default class Table extends React.Component<Props, StateType> {
             promises.push(newItem);
           });
         }
-        // console.log(promises, "these are the promises");
+        // Set the state of the array of objects
         this.setState({ promises });
         console.log(this.state.promises, "is the state updating");
       });
   }
 
   render() {
+    // Set Story counter
     let counter = 0;
     return (
       <div>
