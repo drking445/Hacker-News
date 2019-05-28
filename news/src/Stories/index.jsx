@@ -149,7 +149,8 @@ class newStories extends React.Component<props, StateProps> {
           (stories, index) =>
             stories && (
               <div style={{ listStyle: "none" }} key={stories.id}>
-                {index + 1} {stories.title}
+                  <a style={{textDecoration: "none", color:"black"}}href={stories.url}>  {index + 1} {stories.title} </a>
+                  <div><pre>{stories.score} points by {stories.by}</pre></div>
               </div>
             )
         )
@@ -173,7 +174,7 @@ class newStories extends React.Component<props, StateProps> {
     return (
       <div style={{ width: "90%" }}>
         <ul style={navStyle}>
-          <img src="/img/y.jpg" alt="logo" />
+          <img src="../y.jpg" alt="logo" />
           <li>
             <b>Hacker News</b>
           </li>
@@ -228,8 +229,7 @@ class newStories extends React.Component<props, StateProps> {
           style={{
             display: "flex",
             flexDirection: "column",
-            placeContent: "flex-start",
-            alignItems: "center"
+            placeContent: "flex-start"
           }}
         >
           <ul>{displayData}</ul>
