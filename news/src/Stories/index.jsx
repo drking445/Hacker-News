@@ -1,6 +1,5 @@
 import React from "react";
 import axios from "axios";
-import ReactPaginate from "react-paginate";
 
 const base = " https://hacker-news.firebaseio.com/v0/item/",
   extension = ".json?print=pretty";
@@ -174,7 +173,7 @@ class newStories extends React.Component<props, StateProps> {
     return (
       <div style={{ width: "90%" }}>
         <ul style={navStyle}>
-          <img src="/img/y18.gif" />
+          <img src="/img/y.jpg" alt="logo" />
           <li>
             <b>Hacker News</b>
           </li>
