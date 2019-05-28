@@ -1,6 +1,10 @@
 import React from "react";
-import Table from "../Table";
+import axios from "axios";
+import ReactPaginate from "react-paginate";
 
+const base = " https://hacker-news.firebaseio.com/v0/item/",
+  extension = ".json?print=pretty";
+/*
 type props = {};
 
 type StateProps = {
@@ -9,27 +13,104 @@ type StateProps = {
   items: Array<String>,
   searchItem: string
 };
+*/
+
+type props = {
+  searchTerm: string
+};
+
+type StateProps = {
+  topStories: Array<Number>,
+  newStories: Array<Object>,
+  bestStories: Array<Object>,
+  ask: Array<Object>,
+  show: Array<Object>,
+  jobStories: Array<Object>,
+  gotStories: boolean,
+  promises: Array<Object>,
+  searchItem: string,
+  isMounted: boolean,
+  pageCount: number,
+  currentPage: number,
+  todosPerPage: number
+};
 
 class newStories extends React.Component<props, StateProps> {
-  constructor(props) {
-    super(props);
+  _isMounted = false;
+  constructor() {
+    super();
     this.state = {
       error: null,
       isLoaded: false,
       items: [],
-      searchItem: "newstories"
+      searchItem: "newstories",
+      topStories: [],
+      newStories: [],
+      bestStories: [],
+      ask: [],
+      show: [],
+      jobStories: [],
+      gotStories: false,
+      promises: [{}],
+      isMounted: false,
+      currentPage: 1,
+      todosPerPage: 15
     };
-    this.getStories = this.getStories.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
+
+  //this.getStories = this.getStories.bind(this);
 
   // Onclick change the data onscreen by setting the state of the search item
-  getStories(searchItem) {
+  getStories(searchItem: string) {
     this.setState({ searchItem: searchItem });
-    //console.log(this.state.searchItem);
   }
 
-  componentDidMount() {}
+  componentWillMount() {
+    this._isMounted = false; //you don't load anything before the component is mounted
+  }
+
+  handleClick(event) {
+    this.setState({
+      currentPage: Number(event.target.id)
+    });
+  }
+
+  componentDidMount() {
+    const { searchItem } = this.state;
+    axios
+      .get(
+        "https://hacker-news.firebaseio.com/v0/" +
+          this.state.searchItem +
+          ".json?print=pretty"
+      )
+      .then(result => {
+        // Store category ids
+        const topStories = result.data;
+        const promises = topStories.map(story => {
+          return axios.get(base + story + extension).then(res => res.data);
+        });
+        Promise.all(promises).then(data => {
+          console.log(data);
+          this.setState({
+            promises: data,
+            isMounted: true,
+            pageCount: data.length / 10
+          });
+        });
+      });
+  }
   render() {
+    const largeColumn = {
+      width: "40%"
+    };
+    const midColumn = {
+      width: "30%"
+    };
+    const smallColumn = {
+      width: "10%"
+    };
+
     const navStyle = {
       display: "inline-flex",
       placeContent: "center",
@@ -45,6 +126,51 @@ class newStories extends React.Component<props, StateProps> {
       listStyle: "none",
       display: "inline-block"
     };
+
+    const { currentPage, todosPerPage } = this.state;
+    const indexOfLastTodo = currentPage * todosPerPage;
+    const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
+    const currentTodos = this.state.promises.slice(
+      indexOfFirstTodo,
+      indexOfLastTodo
+    );
+
+    const pageNumbers = [];
+    for (
+      let i = 1;
+      i <= Math.ceil(this.state.promises.length / todosPerPage);
+      i++
+    ) {
+      pageNumbers.push(i);
+    }
+
+    let displayData =
+      this.state.isMounted === true ? (
+        currentTodos.map(
+          (stories, index) =>
+            stories && (
+              <div style={{ listStyle: "none" }} key={stories.id}>
+                {index + 1} {stories.title}
+              </div>
+            )
+        )
+      ) : (
+        <h3>Loading data</h3>
+      );
+
+    const renderPageNumbers = pageNumbers.map(number => {
+      return (
+        <li
+          style={{ listStyle: "none" }}
+          key={number}
+          id={number}
+          onClick={this.handleClick}
+        >
+          {number}
+        </li>
+      );
+    });
+
     return (
       <div style={{ width: "90%" }}>
         <ul style={navStyle}>
@@ -99,7 +225,35 @@ class newStories extends React.Component<props, StateProps> {
             </li>
           }
         </ul>
-        <Table searchTerm={this.state.searchItem} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            placeContent: "flex-start",
+            alignItems: "center"
+          }}
+        >
+          <ul>{displayData}</ul>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <ul
+            style={{
+              display: "flex",
+              alignContent: "center",
+              placeContent: "space-between",
+              alignItems: "center",
+              width: "100%"
+            }}
+          >
+            {renderPageNumbers}
+          </ul>
+        </div>
       </div>
     );
   }

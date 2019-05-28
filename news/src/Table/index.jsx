@@ -8,7 +8,7 @@ type Props = {
 };
 
 type StateType = {
-  topStories: object,
+  topStories: Array<number>,
   newStories: [],
   bestStories: [],
   ask: [],
@@ -19,19 +19,16 @@ type StateType = {
 };
 
 export default class Table extends React.Component<Props, StateType> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      topStories: [],
-      newStories: [],
-      bestStories: [],
-      ask: [],
-      show: [],
-      jobStories: [],
-      gotStories: false,
-      promises: []
-    };
-  }
+  state = {
+    topStories: [],
+    newStories: [],
+    bestStories: [],
+    ask: [],
+    show: [],
+    jobStories: [],
+    gotStories: false,
+    promises: []
+  };
 
   componentDidMount() {
     // Get all the ids for a particular category

@@ -1,4 +1,5 @@
 [ignore]
+<PROJECT_ROOT>/node_modules/[^a].*
 .*/node_modules\.*
 .*/src/serviceWorker\.js
 .*/src/index\.js
